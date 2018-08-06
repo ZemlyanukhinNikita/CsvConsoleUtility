@@ -6,6 +6,7 @@ class CsvService
     private $delim;
     private $skipFirst;
     private $pathToConfig;
+    private $pathToOutputFile;
 
     /**
      * CsvService constructor.
@@ -13,13 +14,15 @@ class CsvService
      * @param $pathToConfig
      * @param $delim
      * @param $skipFirst
+     * @param $pathToOutputFile
      */
-    public function __construct($pathToFile, $pathToConfig, $delim, $skipFirst)
+    public function __construct($pathToFile, $pathToConfig, $delim, $skipFirst, $pathToOutputFile)
     {
         $this->pathToFile = $pathToFile;
         $this->delim = $delim;
         $this->skipFirst = $skipFirst;
         $this->pathToConfig = $pathToConfig;
+        $this->pathToOutputFile = $pathToOutputFile;
     }
 
     public function readCsv()
@@ -41,7 +44,6 @@ class CsvService
     public function generateNewDataFromConfig($inputData)
     {
         $faker = Faker\Factory::create();
-        var_dump($this->pathToConfig);
         $config = require_once $this->pathToConfig;
 
         $newCsvData = [];
@@ -49,7 +51,7 @@ class CsvService
             foreach ($row as $k => $value) {
                 if (!array_key_exists($k, $config)) {
                     $newCsvData[$index][$k] = $value;
-                } elseif(is_callable($config[$k])) {
+                } elseif (is_callable($config[$k])) {
                     $newCsvData[$index][$k] = $config[$k]($value, $row, $k, $faker);
                 } else {
                     $q = $config[$k];
@@ -57,13 +59,12 @@ class CsvService
                 }
             }
         }
-        var_dump($newCsvData);
         return $newCsvData;
     }
 
     public function writeCsv($csvData)
     {
-        $fp = fopen($this->pathToFile, 'w');
+        $fp = fopen($this->pathToOutputFile, 'w');
 
         foreach ($csvData as $fields) {
             fputcsv($fp, $fields, $this->delim);

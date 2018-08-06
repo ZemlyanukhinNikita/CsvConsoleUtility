@@ -8,7 +8,7 @@ require_once 'Services/CsvService.php';
 $opt = new CliParserService();
 $options = $opt->parse();
 
-if($options->getOptionHelp()) {
+if ($options->getOptionHelp()) {
     $opt->printHelp();
     exit;
 }
@@ -19,13 +19,12 @@ if (!$options->getOptionInput() || !$options->getOptionConfig() || !$options->ge
     exit;
 }
 
-
-$flag = false;
-if ($options->getOptionSkipFirst()) {
-    $flag = true;
-}
-
-$csvService = new CsvService($options->getOptionInput(),$options->getOptionConfig(), $options->getOptionDelimiter(), $options->getOptionSkipFirst());
+$csvService = new CsvService(
+    $options->getOptionInput(),
+    $options->getOptionConfig(),
+    $options->getOptionDelimiter(),
+    $options->getOptionSkipFirst(),
+    $options->getOptionOutput());
 
 $readData = $csvService->readCsv();
 $newData = $csvService->generateNewDataFromConfig($readData);

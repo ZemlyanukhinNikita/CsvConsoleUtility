@@ -1,0 +1,13 @@
+{
+    "name": "nake/convert-csv-utility",
+    "authors": [
+        {
+            "name": "n.zemlyanukhin",
+            "email": "n.zemlyanukhin@robo.finance"
+        }
+    ],
+    "require": {
+        "fzaninotto/faker": "^1.8",
+        "ulrichsg/getopt-php": "^3.0"
+    }
+}

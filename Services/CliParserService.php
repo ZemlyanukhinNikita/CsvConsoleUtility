@@ -25,7 +25,7 @@ class CliParserService
                 ->setValidation(function ($filename) {
                     $ext = pathinfo($filename, PATHINFO_EXTENSION);
                     return $ext === 'php' ? true : false;
-                }),
+                })->setValidation('is_readable'),
             Option::create('o', 'output', GetOpt::REQUIRED_ARGUMENT)->setArgumentName('output file')
                 ->setDescription('Путь до файла с результатом')
                 ->setValidation(function ($filename) {
@@ -35,9 +35,9 @@ class CliParserService
             Option::create('d', 'delimiter', GetOpt::REQUIRED_ARGUMENT)
                 ->setDescription('Задать разделитель (по умолчанию “,”)')
                 ->setDefaultValue(','),
-            Option::create(null, 'skip-first')->setDefaultValue(false)->setDescription('Пропускать модификацию первой строки исходного csv'),
-            Option::create(null, 'strict')->setDefaultValue(false)->setDescription('Проверяет, что исходный файл содержит необходимое количество описанных в конфигурационном файле столбцов'),
-            Option::create('h', 'help')->setDescription('Справка, показывает это сообщение'),
+            Option::create(null, 'skip-first', GetOpt::NO_ARGUMENT)->setDefaultValue(false)->setDescription('Пропускать модификацию первой строки исходного csv'),
+            Option::create(null, 'strict', GetOpt::NO_ARGUMENT)->setDefaultValue(false)->setDescription('Проверяет, что исходный файл содержит необходимое количество описанных в конфигурационном файле столбцов'),
+            Option::create('h', 'help', GetOpt::NO_ARGUMENT)->setDescription('Справка, показывает это сообщение'),
         ]);
 
     }

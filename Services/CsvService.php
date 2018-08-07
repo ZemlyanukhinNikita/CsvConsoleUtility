@@ -8,7 +8,7 @@ class CsvService
         $readCsvData = $this->readCsv($inputFile, $delim);
 
         if ($strict && !$this->isStrict($readCsvData, $config)) {
-            echo 'Конфигурационный файл имеет больше столбцов чем в исходный';
+            echo 'Конфигурационный файл имеет больше столбцов чем исходный';
             exit();
         }
 
@@ -76,5 +76,4 @@ class CsvService
         }
         fclose($fp);
     }
-
 }

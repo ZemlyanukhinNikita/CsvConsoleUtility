@@ -8,65 +8,41 @@ require_once 'Services/CsvService.php';
 $opt = new CliParserService();
 $options = $opt->parse();
 
-if ($options->getOptionHelp()) {
+$pathToInputFile = $options->getOptionInput();
+$pathToConfigFile = $options->getOptionConfig();
+$pathToOutputFile = $options->getOptionOutput();
+$delimiter = $options->getOptionDelimiter();
+$skipFirst = $options->getOptionSkipFirst();
+$strict = $options->getOptionStrict();
+$help = $options->getOptionHelp();
+
+if ($help) {
     $opt->printHelp();
     exit;
 }
 
-if (!$options->getOptionInput() || !$options->getOptionConfig() || !$options->getOptionOutput()) {
+if (!$pathToInputFile || !$pathToConfigFile || !$pathToOutputFile) {
     echo 'Пример ввода: -i input.csv -c config.php -o output.csv (обязательные параметры)';
     $opt->printHelp();
     exit;
 }
 
-$csvService = new CsvService(
-    $options->getOptionInput(),
-    $options->getOptionConfig(),
-    $options->getOptionDelimiter(),
-    $options->getOptionSkipFirst(),
-    $options->getOptionOutput());
+$encoding = mb_detect_encoding(file_get_contents($pathToInputFile));
 
-$readData = $csvService->readCsv();
-$newData = $csvService->generateNewDataFromConfig($readData);
-$csvService->writeCsv($newData);
-//
-//$inputData = [];
-//if (($handle = fopen($options->getOptionInput(), "r")) !== FALSE) {
-//    while (($data = fgetcsv($handle, 1000, $options->getOptionDelimiter())) !== FALSE) {
-//        if ($flag) {
-//            $flag = false;
-//            continue;
-//        }
-//        $inputData[] = $data;
-//    }
-//    fclose($handle);
-//}
-//
-//
-//
-//$faker = Faker\Factory::create();
-//
-//$config = require_once 'config.php';
-//
-//$newCsvData = [];
-//foreach ($inputData as $index => $row) {
-//    foreach ($row as $k => $value) {
-//        if (!array_key_exists($k, $config)) {
-//            $newCsvData[$index][$k] = $value;
-//        } elseif(is_callable($config[$k])) {
-//            $newCsvData[$index][$k] = $config[$k]($value, $row, $k, $faker);
-//        } else {
-//            $q = $config[$k];
-//            $newCsvData[$index][$k] = !empty($q) ? $faker->$q : $q;
-//        }
-//    }
-//}
-//
-//
-//$fp = fopen($options->getOptionOutput(), 'w');
-//
-//foreach ($newCsvData as $fields) {
-//    fputcsv($fp, $fields, $options->getOptionDelimiter());
-//}
-//
-//fclose($fp);
+if ($encoding !== 'UTF-8' && $encoding !== 'CP1251') {
+    echo 'Неверная кодировка исходного файла';
+    exit();
+}
+
+$config = require_once $pathToConfigFile;
+
+$csvService = new CsvService();
+
+$csvService->convertToNewCsv(
+    $pathToInputFile,
+    $config,
+    $pathToOutputFile,
+    $delimiter,
+    $skipFirst,
+    $strict
+);

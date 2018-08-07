@@ -16,28 +16,62 @@ class CliParserService
                 ->setArgumentName('input file')
                 ->setDescription('Путь до исходного файла')
                 ->setValidation(function ($filename) {
+                    if (!is_readable($filename)) {
+                        echo 'Исходный файл не существует, либо недоступен для чтения' . PHP_EOL;
+                        return false;
+                    }
+
                     $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                    return $ext === 'csv' ? true : false;
-                })
-                ->setValidation('is_readable'),
-            Option::create('c', 'config', GetOpt::REQUIRED_ARGUMENT)->setArgumentName('config file')
+                    if ($ext !== 'csv') {
+                        echo 'Исходный файл должен быть с расширением .csv' . PHP_EOL;
+                        return false;
+                    }
+                    return true;
+                }),
+            Option::create('c', 'config', GetOpt::REQUIRED_ARGUMENT)
+                ->setArgumentName('config file')
                 ->setDescription('Путь до файла конфигурации')
                 ->setValidation(function ($filename) {
+                    if (!is_readable($filename)) {
+                        echo 'Конфигурационный файл не существует, либо недоступен для чтения' . PHP_EOL;
+                        return false;
+                    }
+
                     $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                    return $ext === 'php' ? true : false;
-                })->setValidation('is_readable'),
-            Option::create('o', 'output', GetOpt::REQUIRED_ARGUMENT)->setArgumentName('output file')
+                    if ($ext !== 'php') {
+                        echo 'Исходный файл должен быть с расширением .csv' . PHP_EOL;
+                        return false;
+                    }
+                    return true;
+                }),
+            Option::create('o', 'output', GetOpt::REQUIRED_ARGUMENT)
+                ->setArgumentName('output file')
                 ->setDescription('Путь до файла с результатом')
                 ->setValidation(function ($filename) {
                     $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                    return $ext === 'csv' && (is_writable($filename) || !is_file($filename)) ? true : false;
+                    if ($ext !== 'csv') {
+                        echo 'Выходной файл должен быть с расширением .csv' . PHP_EOL;
+                        return false;
+                    }
+
+                    if (!is_writable($filename) && is_file($filename)) {
+                        echo 'Файл не существует, либо недоступен для записи' . PHP_EOL;
+                        return false;
+                    }
+
+                    return true;
                 }),
             Option::create('d', 'delimiter', GetOpt::REQUIRED_ARGUMENT)
                 ->setDescription('Задать разделитель (по умолчанию “,”)')
                 ->setDefaultValue(','),
-            Option::create(null, 'skip-first', GetOpt::NO_ARGUMENT)->setDefaultValue(false)->setDescription('Пропускать модификацию первой строки исходного csv'),
-            Option::create(null, 'strict', GetOpt::NO_ARGUMENT)->setDefaultValue(false)->setDescription('Проверяет, что исходный файл содержит необходимое количество описанных в конфигурационном файле столбцов'),
-            Option::create('h', 'help', GetOpt::NO_ARGUMENT)->setDescription('Справка, показывает это сообщение'),
+            Option::create(null, 'skip-first', GetOpt::NO_ARGUMENT)
+                ->setDefaultValue(false)
+                ->setDescription('Пропускать модификацию первой строки исходного csv'),
+            Option::create(null, 'strict', GetOpt::NO_ARGUMENT)
+                ->setDefaultValue(false)
+                ->setDescription('Проверяет, что исходный файл содержит необходимое количество описанных в конфигурационном файле столбцов'),
+            Option::create('h', 'help', GetOpt::NO_ARGUMENT)
+                ->setDescription('Справка, показывает это сообщение'),
         ]);
 
     }
@@ -60,15 +94,16 @@ class CliParserService
                 $options->setOptionHelp($this->getopt->getOption('help'));
                 return $options;
 
-            } catch (Missing $exception) {
+            } catch (Missing $e) {
                 // catch missing exceptions if help is requested
                 if (!$this->getopt->getOption('help')) {
-                    throw $exception;
+                    throw $e;
                 }
             }
-        } catch (ArgumentException $exception) {
-            echo $exception->getMessage();
+        } catch (ArgumentException $e) {
+            echo $e->getMessage();
             echo PHP_EOL . $this->getopt->getHelpText();
+            exit();
         }
     }
 

@@ -11,7 +11,8 @@ class CliParserService
 
     public function __construct()
     {
-        $this->getopt = new GetOpt([
+        $this->getopt = new GetOpt();
+        $this->getopt->addOptions([
             Option::create('i', 'input', GetOpt::REQUIRED_ARGUMENT)
                 ->setArgumentName('input file')
                 ->setDescription('Путь до исходного файла')

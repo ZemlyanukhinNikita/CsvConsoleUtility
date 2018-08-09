@@ -25,7 +25,7 @@ class CliParserService
                     }
 
                     $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                    if ($ext !== 'csv') {
+                    if ($ext !== 'csv' && mime_content_type($filename) !== 'text/plain') {
                         echo 'Исходный файл должен быть с расширением .csv' . PHP_EOL;
                         return false;
                     }
@@ -73,7 +73,8 @@ class CliParserService
                         return false;
                     }
                     return true;
-                }),
+                })
+            ,
             Option::create(null, 'skip-first', GetOpt::NO_ARGUMENT)
                 ->setDefaultValue(false)
                 ->setDescription('Пропускать модификацию первой строки исходного csv'),

@@ -12,11 +12,13 @@ class CliParserService
     public function __construct()
     {
         $this->getopt = new GetOpt();
+
         $this->getopt->addOptions([
             Option::create('i', 'input', GetOpt::REQUIRED_ARGUMENT)
                 ->setArgumentName('input file')
                 ->setDescription('Путь до исходного файла')
                 ->setValidation(function ($filename) {
+
                     if (!is_readable($filename)) {
                         echo 'Исходный файл не существует, либо недоступен для чтения' . PHP_EOL;
                         return false;
@@ -39,7 +41,7 @@ class CliParserService
                     }
 
                     $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                    if ($ext !== 'php') {
+                    if ($ext !== 'php' && mime_content_type($filename) !== 'text/x-php') {
                         echo 'Исходный файл должен быть с расширением .csv' . PHP_EOL;
                         return false;
                     }
@@ -64,7 +66,14 @@ class CliParserService
                 }),
             Option::create('d', 'delimiter', GetOpt::REQUIRED_ARGUMENT)
                 ->setDescription('Задать разделитель (по умолчанию “,”)')
-                ->setDefaultValue(','),
+                ->setDefaultValue(',')
+                ->setValidation(function ($delimiter) {
+                    if (strlen($delimiter) !== 1) {
+                        echo 'Неверный разделитель' . PHP_EOL;
+                        return false;
+                    }
+                    return true;
+                }),
             Option::create(null, 'skip-first', GetOpt::NO_ARGUMENT)
                 ->setDefaultValue(false)
                 ->setDescription('Пропускать модификацию первой строки исходного csv'),
@@ -74,7 +83,6 @@ class CliParserService
             Option::create('h', 'help', GetOpt::NO_ARGUMENT)
                 ->setDescription('Справка, показывает это сообщение'),
         ]);
-
     }
 
     /**
@@ -104,7 +112,7 @@ class CliParserService
         } catch (ArgumentException $e) {
             echo $e->getMessage();
             echo PHP_EOL . $this->getopt->getHelpText();
-            exit();
+            exit(1);
         }
     }
 

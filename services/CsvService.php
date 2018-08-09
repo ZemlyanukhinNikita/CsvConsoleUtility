@@ -2,11 +2,16 @@
 
 class CsvService
 {
+    /**
+     * Метод, считывает данные с входого файла, и формирует массив из этих данных
+     * @param $inputFile
+     * @param $delim
+     * @return array
+     */
     public function readCsv($inputFile, $delim)
     {
         $inputData = [];
         $file = new SplFileObject($inputFile);
-
         while (!$file->eof()) {
             $line = $file->fgetcsv($delim);
 
@@ -23,6 +28,13 @@ class CsvService
         return $inputData;
     }
 
+    /**
+     * Метод генерирует выходные данные по правилам описанным в файле конфига $configData
+     * @param $inputData
+     * @param $configData
+     * @param $skipFirst
+     * @return array
+     */
     public function generateOutputDataFromConfig($inputData, $configData, $skipFirst)
     {
         $newCsvData = [];
@@ -57,6 +69,13 @@ class CsvService
         return $newCsvData;
     }
 
+    /**
+     * Метод записывает данные $csvData в выходной файл $outputFile
+     * @param $csvData
+     * @param $outputFile
+     * @param $delim
+     * @param $encoding
+     */
     public function writeCsv($csvData, $outputFile, $delim, $encoding)
     {
         $fp = fopen($outputFile, 'w');
@@ -78,8 +97,16 @@ class CsvService
         fclose($fp);
     }
 
+    /**
+     * Метод проверяет соответсвует ли файл конфига $configFile входному файлу
+     * в файле конфига должно быть меньшее или одинаковое количество столбцов
+     * относительно исходого файла
+     * @param $inputData
+     * @param $configFile
+     * @return bool
+     */
     public function isStrict($inputData, $configFile): bool
     {
-        return (count($inputData[0]) < max(array_keys($configFile)) + 1) ? false : true;
+        return (count($inputData[0]) <= max(array_keys($configFile))) ? false : true;
     }
 }

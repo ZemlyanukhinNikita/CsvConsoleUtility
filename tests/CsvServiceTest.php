@@ -2,7 +2,8 @@
 
 use PHPUnit\Framework\TestCase;
 
-require '../services/CsvService.php';
+require_once __DIR__. DIRECTORY_SEPARATOR . '../vendor/autoload.php';
+require_once __DIR__. DIRECTORY_SEPARATOR . '../services/CsvService.php';
 
 class CsvServiceTest extends TestCase
 {
@@ -67,7 +68,6 @@ class CsvServiceTest extends TestCase
     public function testReadCsvData()
     {
         $actualData = $this->csvService->readCsv('testFiles/testInput.csv', ',');
-
         $this->assertEquals($this->readedData, $actualData);
     }
 
@@ -86,16 +86,14 @@ class CsvServiceTest extends TestCase
     public function testWriteCsv()
     {
         $this->csvService->writeCsv($this->dataFromConfig, $this->testOutputFile, ',', 'UTF-8');
-
         $this->assertTrue(file_exists($this->testOutputFile));
 
         $actualData = $this->csvService->readCsv($this->testOutputFile, ',');
-
         $this->assertEquals($this->dataFromConfig, $actualData);
     }
 
     /**
-     * Тест, проверяет
+     * Тест, проверяет соответсвие входного файла, конфигурационному
      */
     public function testIsStrict()
     {
@@ -108,7 +106,7 @@ class CsvServiceTest extends TestCase
      */
     public static function tearDownAfterClass()
     {
-        if(file_exists('testFiles/testOutput.csv')) {
+        if (file_exists('testFiles/testOutput.csv')) {
             unlink('testFiles/testOutput.csv');
         }
     }

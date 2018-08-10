@@ -1,7 +1,7 @@
 <?php
 
-require '../services/CliParserService.php';
-require '../domain/Options.php';
+require_once __DIR__. DIRECTORY_SEPARATOR . '../services/CliParserService.php';
+require_once __DIR__. DIRECTORY_SEPARATOR . '../domain/Options.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -15,12 +15,12 @@ class CliTest extends TestCase
     }
 
     /**
-     * Тест на правильные команды
+     * Тест на консольные команды
      * @dataProvider additionProvider
      * @param $excepted
      * @param $command
      */
-    public function testTrueCliOptions($excepted, $command)
+    public function testCliOptions($excepted, $command)
     {
         exec('php ' . $this->pathToIndex . ' ' . $command, $output, $exitCode);
         $this->assertEquals($excepted, $exitCode == 0);
@@ -45,6 +45,7 @@ class CliTest extends TestCase
             [true, '--input ' . $pathToInput . ' --config ' . $pathToConfig . ' --output ' . $pathToOutput],
             [true, '--input ' . $pathToInput . ' --config ' . $pathToConfig . ' --output ' . $pathToOutput . ' --skip-first'],
             [true, '--input ' . $pathToInput . ' --config ' . $pathToConfig . ' --output ' . $pathToOutput . ' --skip-first --strict'],
+            [true, '--input ' . $pathToInput . ' --config ' . $pathToConfig . ' --output ' . $pathToOutput . ' --strict --skip-first'],
 
             [false, ''],
             [false, 'gfgfgf'],
@@ -77,5 +78,4 @@ class CliTest extends TestCase
         unlink('testFiles/testOutput.csv');
         unlink('testFiles/testOutput2.csv');
     }
-
 }

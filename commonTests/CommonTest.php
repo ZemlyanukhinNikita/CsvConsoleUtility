@@ -28,7 +28,7 @@ class CommonTest extends TestCase
     {
         $correctInput = "files/correctInput.csv";
         $correctInput2 = "files/correctInput2.csv";
-        $incorrectInput = 'files/incorrectInput.csv';
+        //$incorrectInput = 'files/incorrectInput.csv';
 
         $correctConfig = "files/correctConfig.php";
         $incorrectConfig = "files/incorrectConfig.php";
@@ -66,7 +66,7 @@ class CommonTest extends TestCase
             // некорректный конфиг, содержит больше столбцов чем в исходном файле
             [false, ["-i $correctInput", "-c $incorrectConfig", "-o $output", '--strict']],
             // неккоректный инпут файл, количество столбоц отличается
-            [false, ["-i $incorrectInput", "-c $correctConfig", "-o $output"]],
+            // [false, ["-i $incorrectInput", "-c $correctConfig", "-o $output"]],
 
             // правильный разделитель и файлы
             [true, ["-i $correctInput", "-c $correctConfig", "-o $output", '-d ","']],
@@ -88,7 +88,7 @@ class CommonTest extends TestCase
         $correctInput = 'files/correctInput.csv';
         $correctConfig = 'files/correctConfig.php';
         $output = 'files/output.csv';
-        exec('php ' . $this->pathToIndex . ' -i '. $correctInput . ' -c ' . $correctConfig . ' -o ' . $output , $output, $exitCode);
+        exec('php ' . $this->pathToIndex . ' -i ' . $correctInput . ' -c ' . $correctConfig . ' -o ' . $output, $output, $exitCode);
         $this->assertEquals(file_get_contents('files/readyOutput.csv'), file_get_contents('files/output.csv'));
     }
 
@@ -97,15 +97,14 @@ class CommonTest extends TestCase
         $correctInput = 'files/win1251.csv';
         $correctConfig = 'files/correctConfig.php';
         $output = 'files/output.csv';
-        exec('php ' . $this->pathToIndex . ' -i '. $correctInput . ' -c ' . $correctConfig . ' -o ' . $output , $output, $exitCode);
+        exec('php ' . $this->pathToIndex . ' -i ' . $correctInput . ' -c ' . $correctConfig . ' -o ' . $output, $output, $exitCode);
         $this->assertEquals(file_get_contents('files/outWin1251.csv'), file_get_contents('files/output.csv'));
     }
 
     public static function tearDownAfterClass()
     {
-        if(file_exists('files/output.csv')) {
+        if (file_exists('files/output.csv')) {
             unlink('files/output.csv');
         }
     }
-
 }

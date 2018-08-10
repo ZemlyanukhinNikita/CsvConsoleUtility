@@ -1,5 +1,7 @@
 <?php
 
+use Faker\Factory;
+
 class CsvService
 {
     /**
@@ -11,7 +13,8 @@ class CsvService
     public function readCsv($inputFile, $delim)
     {
         $inputData = [];
-        $file = new SplFileObject($inputFile);
+        $file = new SplFileObject($inputFile, 'r');
+        $answer = '';
         while (!$file->eof()) {
             $line = $file->fgetcsv($delim);
 
@@ -19,9 +22,15 @@ class CsvService
                 $countColumns = sizeof($line);
             }
 
-            if (sizeof($line) !== $countColumns) {
-                echo 'Неверный csv файл. Количество стобцов в файле не совпадает либо указан некорректный разделитель' . PHP_EOL;
-                exit(1);
+            if (sizeof($line) !== $countColumns && strlen($answer) == 0) {
+                echo 'Неверный csv файл. Количество столбцов в файле не совпадает либо указан некорректный разделитель' . PHP_EOL;
+                echo "Хотите продолжить?  y/n ?" . PHP_EOL;
+                $handle = fopen("php://stdin", "r");
+                $answer = fgets($handle);
+                if (trim($answer) != 'y') {
+                    exit(1);
+                }
+                fclose($handle);
             }
             $inputData[] = $line;
         }
@@ -38,7 +47,7 @@ class CsvService
     public function generateOutputDataFromConfig($inputData, $configData, $skipFirst)
     {
         $newCsvData = [];
-        $faker = Faker\Factory::create();
+        $faker = Factory::create();
 
         foreach ($inputData as $index => $row) {
 
@@ -78,35 +87,33 @@ class CsvService
      */
     public function writeCsv($csvData, $outputFile, $delim, $encoding)
     {
-        $fp = fopen($outputFile, 'w');
+        $file = new SplFileObject($outputFile, 'w');
 
         foreach ($csvData as $fields) {
             foreach ($fields as $key => $field) {
-                $encodeLine = mb_detect_encoding($field, ['UTF-8', 'Windows-1251']);
+                $encodingLine = mb_detect_encoding($field, ['UTF-8', 'Windows-1251']);
 
-                if ($encodeLine != $encoding) {
-                    $field = mb_convert_encoding($field, $encoding, $encodeLine);
+                if ($encodingLine != $encoding) {
+                    $field = mb_convert_encoding($field, $encoding, $encodingLine);
                 }
                 $fields[$key] = $field;
             }
-            fputcsv($fp, $fields, $delim);
+            $file->fputcsv($fields, $delim);
         }
-
-        $stat = fstat($fp);
-        ftruncate($fp, $stat['size'] - 1);
-        fclose($fp);
+        $fileInfo = $file->fstat();
+        $file->ftruncate($fileInfo['size'] - 1);
     }
 
     /**
      * Метод проверяет соответсвует ли файл конфига $configFile входному файлу
      * в файле конфига должно быть меньшее или одинаковое количество столбцов
      * относительно исходого файла
-     * @param $inputData
+     * @param $inputFileData
      * @param $configFile
      * @return bool
      */
-    public function isStrict($inputData, $configFile): bool
+    public function isStrict($inputFileData, $configFile): bool
     {
-        return (count($inputData[0]) <= max(array_keys($configFile))) ? false : true;
+        return (count($inputFileData[0]) <= max(array_keys($configFile))) ? false : true;
     }
 }

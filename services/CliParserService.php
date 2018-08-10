@@ -18,14 +18,13 @@ class CliParserService
                 ->setArgumentName('input file')
                 ->setDescription('Путь до исходного файла')
                 ->setValidation(function ($filename) {
-
                     if (!is_readable($filename)) {
                         echo 'Исходный файл не существует, либо недоступен для чтения' . PHP_EOL;
                         return false;
                     }
 
-                    $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                    if ($ext !== 'csv' && mime_content_type($filename) !== 'text/plain') {
+                    if (pathinfo($filename, PATHINFO_EXTENSION) !== 'csv' &&
+                        mime_content_type($filename) !== 'text/plain') {
                         echo 'Исходный файл должен быть с расширением .csv' . PHP_EOL;
                         return false;
                     }
@@ -40,8 +39,8 @@ class CliParserService
                         return false;
                     }
 
-                    $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                    if ($ext !== 'php' && mime_content_type($filename) !== 'text/x-php') {
+                    if (pathinfo($filename, PATHINFO_EXTENSION) !== 'php' &&
+                        mime_content_type($filename) !== 'text/x-php') {
                         echo 'Исходный файл должен быть с расширением .csv' . PHP_EOL;
                         return false;
                     }
@@ -51,8 +50,7 @@ class CliParserService
                 ->setArgumentName('output file')
                 ->setDescription('Путь до файла с результатом')
                 ->setValidation(function ($filename) {
-                    $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                    if ($ext !== 'csv') {
+                    if (pathinfo($filename, PATHINFO_EXTENSION) !== 'csv') {
                         echo 'Выходной файл должен быть с расширением .csv' . PHP_EOL;
                         return false;
                     }
@@ -61,20 +59,17 @@ class CliParserService
                         echo 'Файл не существует, либо недоступен для записи' . PHP_EOL;
                         return false;
                     }
-
                     return true;
                 }),
             Option::create('d', 'delimiter', GetOpt::REQUIRED_ARGUMENT)
-                ->setDescription('Задать разделитель (по умолчанию “,”)')
+                ->setDescription("Задать разделитель (по умолчанию “,”) для символа табуляции используйте ввод $'\\t'")
                 ->setDefaultValue(',')
                 ->setValidation(function ($delimiter) {
-                    if (strlen($delimiter) !== 1) {
-                        echo 'Неверный разделитель' . PHP_EOL;
+                    if (!preg_match('(^\W$|\t)', $delimiter)) {
                         return false;
                     }
                     return true;
-                })
-            ,
+                }),
             Option::create(null, 'skip-first', GetOpt::NO_ARGUMENT)
                 ->setDefaultValue(false)
                 ->setDescription('Пропускать модификацию первой строки исходного csv'),
@@ -103,9 +98,7 @@ class CliParserService
                 $options->setOptionStrict($this->getopt->getOption('strict'));
                 $options->setOptionHelp($this->getopt->getOption('help'));
                 return $options;
-
             } catch (Missing $e) {
-                // catch missing exceptions if help is requested
                 if (!$this->getopt->getOption('help')) {
                     throw $e;
                 }

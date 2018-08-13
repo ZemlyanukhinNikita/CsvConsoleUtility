@@ -1,9 +1,9 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require_once 'services/CliParserService.php';
-require_once 'services/CsvService.php';
-require_once 'domain/Options.php';
+
+use services\CliParserService;
+use services\CsvService;
 
 $opt = new CliParserService();
 $options = $opt->parse();

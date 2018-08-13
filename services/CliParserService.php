@@ -1,5 +1,8 @@
 <?php
 
+namespace services;
+
+use domain\Options;
 use GetOpt\ArgumentException;
 use GetOpt\ArgumentException\Missing;
 use GetOpt\GetOpt;

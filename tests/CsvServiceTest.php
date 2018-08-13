@@ -1,9 +1,9 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
 
-require_once __DIR__. DIRECTORY_SEPARATOR . '../vendor/autoload.php';
-require_once __DIR__. DIRECTORY_SEPARATOR . '../services/CsvService.php';
+use PHPUnit\Framework\TestCase;
+use services\CsvService;
 
 class CsvServiceTest extends TestCase
 {

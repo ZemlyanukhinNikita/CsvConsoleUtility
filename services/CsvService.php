@@ -1,6 +1,10 @@
 <?php
 
+namespace services;
+
+use Exception;
 use Faker\Factory;
+use SplFileObject;
 
 class CsvService
 {

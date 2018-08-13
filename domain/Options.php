@@ -1,5 +1,7 @@
 <?php
 
+namespace domain;
+
 class Options
 {
     private $optionInput;

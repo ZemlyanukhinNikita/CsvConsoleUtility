@@ -38,7 +38,7 @@ $config = require_once $pathToConfigFile;
 $csvService = new CsvService();
 $inputData = $csvService->readCsv($pathToInputFile, $delimiter);
 
-if ($strict && !$csvService->isStrict($inputData, $config)) {
+if ($strict && !$csvService->isStrictEqualsData($inputData, $config)) {
     echo 'Конфигурационный файл имеет больше столбцов чем исходный' . PHP_EOL;
     exit(1);
 }

@@ -95,7 +95,7 @@ class CsvServiceTest extends TestCase
      */
     public function testIsStrict()
     {
-        $exceptTrue = $this->csvService->isStrict($this->readedData, $this->config);
+        $exceptTrue = $this->csvService->isStrictEqualsData($this->readedData, $this->config);
         $this->assertTrue($exceptTrue);
     }
 

@@ -116,7 +116,7 @@ class CsvService
      * @param $configFile
      * @return bool
      */
-    public function isStrict($inputFileData, $configFile): bool
+    public function isStrictEqualsData($inputFileData, $configFile): bool
     {
         return (count($inputFileData[0]) <= max(array_keys($configFile))) ? false : true;
     }
